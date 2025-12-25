@@ -50,13 +50,14 @@ INSTALLED_APPS = [
     'django_celery_results',
     'django_redis',
     'decouple',
-
+    'rest_framework.authtoken',
 
     # apps
     'users',
     'shared',
     'posts',
     'audios',
+
 ]
 
 MIDDLEWARE = [
@@ -138,6 +139,8 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'shared.authentication.CoreJWTAuthentication',
+
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,

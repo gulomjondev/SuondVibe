@@ -14,6 +14,9 @@ from posts.models import Post, Like, Comment
 from posts.serializers import PostCreateSerializer, PostSerializer, CommentSerializer, FeedPostSerializer, \
     NotificationSerializer
 import logging
+
+from shared.authentication import ExternalJWTAuthentication
+
 logger = logging.getLogger(__name__)
 
 class PostCreateAPIView(generics.CreateAPIView):
@@ -44,26 +47,11 @@ class FeedApiView(generics.ListAPIView):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    authentication_classes = [ExternalJWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated])
-    def like(self, request, pk=None):
-        post = self.get_object()
-        user = request.user
-
-        like_qs = Like.objects.filter(user=user, post=post)
-
-        if like_qs.exists():
-            like_qs.delete()
-            return Response(
-                {'liked': False},
-                status=status.HTTP_200_OK
-            )
-
-        Like.objects.create(user=user, post=post)
-        return Response(
-            {'liked': True},
-            status=status.HTTP_201_CREATED
-        )
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()

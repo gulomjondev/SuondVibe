@@ -39,19 +39,19 @@ class User(AbstractUser):
         (PHOTO_STEP, PHOTO_STEP),
     )
 
-    user_roles = models.CharField(max_length=31, choices=USER_ROLES, default=ORDINARY_USER)
-    auth_status = models.CharField(max_length=31, choices=AUTH_STATUS_CHOICES, default=NEW)
-    auth_type_choices = models.CharField(max_length=31, choices=AUTH_TYPE_CHOICES, default=VIA_PHONE)
+    user_roles = models.CharField(max_length=31, choices=USER_ROLES, default='ordinary_user')
+    auth_status = models.CharField(max_length=31, choices=AUTH_STATUS_CHOICES, default='new')
+    auth_type_choices = models.CharField(max_length=31, choices=AUTH_TYPE_CHOICES, default='via_phone')
     email = models.EmailField(null=True, blank=True, unique=True)
     phone_number = models.CharField(max_length=13, null=True, blank=True, unique=True)
     photo = models.ImageField(
         null=True,
         blank=True,
         upload_to='user_photos/',
-        validators=[FileExtensionValidator(allowed_extensions=['jpg','jpeg','png','heif','webp'])]
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'heif', 'webp'])]
     )
     is_premium = models.BooleanField(default=False)
-
+    external_id = models.IntegerField(unique=True, null=True, blank=True)
     def __str__(self):
         return self.username
 
@@ -137,3 +137,5 @@ class UserConfirmation(BaseModel):
 
     def __str__(self):
         return f"{self.user.username} - {self.code}"
+
+
